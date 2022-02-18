@@ -1,6 +1,8 @@
-<template></template>
+<template>
+<h1> profile {{ steamid }} </h1>
+</template>
 
-<script lang="ts">
+<script lang="ts"> 
 export default {
   data: () => ({
     steamid: "", // steamid64
