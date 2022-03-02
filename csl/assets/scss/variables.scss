@@ -1,0 +1,62 @@
+@import './media.scss';
+@import './placeholder.scss';
+
+$font-size-small: 12px !default;
+$font-size-base: 14px !default;
+$font-size-large: 16px !default;
+
+// Etc
+$color-highlight-blue: rgba(79, 137, 246);
+$color-shadow-highlight-blue: rgb(56, 65, 80);
+
+// Other values
+$color-success: #52c41a;
+$color-warning: #faad14;
+$color-error: #f5222d;
+$color-info: #1890ff;
+
+$border-radius: 25px;
+
+$box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+$content-padding: 20px;
+
+$ripple-opacity: 1;
+$ripple-duration: 2000ms;
+$ripple-easing: cubic-bezier(0, 0.5, 0.5, 1.2);
+
+%ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin placeholderColor($color: #fff) {
+  &::-webkit-input-placeholder {
+    color: $color;
+  }
+
+  &::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: $color;
+  }
+
+  &:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: $color;
+  }
+
+  &:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: $color;
+  }
+}
+
+@mixin ellipsisMultiline($number: 1) {
+  display: -webkit-box;
+  overflow: hidden;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $number;
+}
