@@ -1,9 +1,11 @@
 <template>
+<div v-if="ws != null">
   <h1>rooms</h1>
   <button v-on:click="getRooms">get-rooms</button>
   <button value="HAHAHAHAHA" v-on:click="joinRoom(1)">join room 1</button>
   <button value="XDDDDDDDDDDDDDDD" v-on:click="joinRoom(2)">join room 2</button>
   <button v-on:click="joinRoom(3)">join room 3</button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -16,38 +18,45 @@ export default defineNuxtComponent({
 
   methods: {
     joinRoom: function(v: number) {
-      console.log(v)
-      //this.$router.redirect("")
+      //this.$router.redirect("/room/"+v)
     },
-
     getRooms: function () {
       this.ws.send(JSON.stringify({
         action: 'get-rooms',
         message: '',
         sender: '',
-        created: 'today', //TODO: today date? doesnt rly matter tho
       }))
     },
+    //* Socket stuff
+    onSocketConnect: function (): void {
+    },
+    onSocketClose: function (): void {
+    },
+    onSocketMessage: function (evt): void {
+      alert(evt.data)
+    },
+    onSocketError: function (evt): void {
+    },
   },
-
+  unmounted() {
+    if (this.ws != null && this.ws.readyState != WebSocket.CLOSED)
+      this.ws.close(1000, 'Client has left the hub')
+  },
   mounted() {
+    // connect to hub websocket
     this.ws = new WebSocket('ws://localhost:8081/api/rooms')
-
+    const _m = this // used to call vue methods
     this.ws.onopen = function () {
-      alert('Connected...')
+      _m.onSocketConnect()
     }
-
-    this.ws.onmessage = function (msg) {
-      alert(msg.data)
-    }
-
     this.ws.onclose = function () {
-      alert('Connection is closed...')
+      _m.onSocketClose()
     }
-
-    this.ws.onerror = function (err) {
-      // TODO: redirect to error page
-      console.dir(err)
+    this.ws.onmessage = function (evt) {
+      _m.onSocketMessage(evt)
+    }
+    this.ws.onerror = function (evt) {
+      _m.onSocketError(evt)
     }
 
     /* didnt work :C

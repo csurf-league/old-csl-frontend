@@ -1,5 +1,5 @@
 <template>
-  <div v-if="roomID != 0">
+  <div v-if="roomID != 0 && ws != null">
     <h1>room {{ roomID }}</h1>
     <table></table>
     <fieldset>
@@ -12,8 +12,8 @@
     </fieldset>
     <h2>chat:</h2>
     <ul>
-      <li :key="m" v-for="m in chat">
-        {{ m }}
+      <li :key="msg" v-for="msg in chat">
+        {{ msg }}
       </li>
     </ul>
   </div>
@@ -60,7 +60,6 @@ export default defineNuxtComponent({
       }
     },
     onLeaveRoom: function (): void {
-      this.ws.close(1000, 'Client has left the room')
       this.$router.push('/rooms')
     },
     //* Socket stuff
@@ -72,8 +71,12 @@ export default defineNuxtComponent({
       this.onReceiveMsg(evt.data)
     },
     onSocketError: function (evt): void {
-      this.$router.push('/404') // TODO: 404 page showing the error ig
+      this.$router.push('/404') // TODO: 404 page/component showing the error ig
     },
+  },
+  unmounted() {
+    if (this.ws != null && this.ws.readyState != WebSocket.CLOSED)
+      this.ws.close(1000, 'Client has left the room')
   },
   mounted() {
     const route = useRoute()
@@ -87,7 +90,7 @@ export default defineNuxtComponent({
 
     // connect to room websocket
     this.ws = new WebSocket(`ws://localhost:8081/api/room/${this.roomID}?steamid=${this.steamid}`)
-    const _m = this // refers vue methods
+    const _m = this // used to call vue methods
     this.ws.onopen = function () {
       _m.onSocketConnect()
     }
