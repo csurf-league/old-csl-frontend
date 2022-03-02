@@ -29,10 +29,15 @@ export default defineNuxtConfig({
     // module options
     sockets: [
       {
-        name: 'main',
-        url: 'http://localhost:3000',
+        name: 'csl',
+        url: 'http://localhost:8081/api/rooms',
       },
     ],
+    server: {
+        cors: { 
+          origin: "http://localhost:3000",
+         },
+      }
   },
 
   colorMode: {
