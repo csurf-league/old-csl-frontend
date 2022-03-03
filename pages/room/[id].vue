@@ -10,6 +10,7 @@
         <button v-on:click="onLeaveRoom">Leave room</button>
       </div>
     </fieldset>
+        <button v-on:click="onLeaveRoom">Back to lobby</button>
     <h2>chat:</h2>
     <ul>
       <li :key="msg" v-for="msg in chat">
@@ -40,8 +41,16 @@ export default defineNuxtComponent({
         })
       )
     },
-    onReceiveMsg: function (msg): void {
-      var msg = JSON.parse(msg)
+    onLeaveRoom: function (): void {
+      this.$router.push('/rooms')
+    },
+    //* Socket stuff
+    onSocketConnect: function (): void {
+    },
+    onSocketClose: function (): void {
+    },
+    onSocketMessage: function (evt): void {
+      var msg = JSON.parse(evt.data)
       console.log(msg)
 
       switch (msg.action) {
@@ -59,22 +68,13 @@ export default defineNuxtComponent({
         }
       }
     },
-    onLeaveRoom: function (): void {
-      this.$router.push('/rooms')
-    },
-    //* Socket stuff
-    onSocketConnect: function (): void {
-    },
-    onSocketClose: function (): void {
-    },
-    onSocketMessage: function (evt): void {
-      this.onReceiveMsg(evt.data)
-    },
     onSocketError: function (evt): void {
       this.$router.push('/404') // TODO: 404 page/component showing the error ig
     },
   },
   unmounted() {
+    console.log('id unmounted')
+    console.dir(this.ws)
     if (this.ws != null && this.ws.readyState != WebSocket.CLOSED)
       this.ws.close(1000, 'Client has left the room')
   },
