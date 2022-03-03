@@ -2,15 +2,35 @@
   <div v-if="ws != null">
     <h1>rooms lobby</h1>
     <h3>your steamid: {{ steamid }}</h3>
-    <button v-on:click="getRooms">get-rooms</button>
-    <button v-on:click="joinRoom(1)">join room 1</button>
-    <button v-on:click="joinRoom(2)">join room 2</button>
-    <button v-on:click="joinRoom(3)">join room 3</button>
-
+    <div v-if="rooms != []">
+      <div v-for="r in rooms" :key="r.id">
+        <button v-on:click="joinRoom(r.id)">
+          join room {{ r.id }}; current players: {{ r.clients == null ? 0 : r.clients.length }}; maxplayers: {{ r.maxplayers }}
+        </button>
+        <br />
+      </div>
+    </div>
     <h3>Current players in the hub:</h3>
     <ul>
       <li :key="p" v-for="p in hubPlayers">
         {{ p }}
+      </li>
+    </ul>
+
+<!-- TODO: chat component (for room and hub) -->
+    <h2>hub chat</h2>
+    <table></table>
+    <fieldset>
+      <legend>Enter your message..</legend>
+      <div>
+        <input type="text" placeholder="Your message..." style="height: 60px" v-model="chatMessage" />
+        <button v-on:click="onSendMsg">Send message</button>
+      </div>
+    </fieldset>
+    <h2>hub messages:</h2>
+    <ul>
+      <li :key="msg" v-for="msg in chat">
+        {{ msg }}
       </li>
     </ul>
   </div>
@@ -22,7 +42,10 @@ export default defineNuxtComponent({
     return {
       ws: null as WebSocket,
       hubPlayers: [] as string[], // TODO: user interface
-      steamid: (Math.floor(Math.random() * 10000) + 7000).toString(), // TODO: local storage steamid ofc
+      rooms: [],
+      steamid: (Math.floor(Math.random() * 10000) + 7000).toString(), // TODO: local storage steamid / auth token
+      chatMessage: '' as string,
+      chat: [] as string[]
     }
   },
 
@@ -34,8 +57,6 @@ export default defineNuxtComponent({
       this.ws.send(
         JSON.stringify({
           action: 'get-rooms',
-          message: '',
-          sender: '',
         })
       )
     },
@@ -43,25 +64,37 @@ export default defineNuxtComponent({
       this.ws.send(
         JSON.stringify({
           action: 'get-hub-players',
-          message: '',
-          sender: '',
+        })
+      )
+    },
+    onSendMsg: function (): void {
+      this.ws.send(
+        JSON.stringify({
+          action: 'hub-msg',
+          message: this.chatMessage,
+          sender: this.steamid,
         })
       )
     },
     //* Socket stuff
     onSocketConnect: function (): void {
-      this.getRooms()
-      this.getCurrentPlayers()
-      console.log('socket conn')
+      //this.getRooms() // backend will automatically send us current rooms when client enters the hub
+      //this.getCurrentPlayers()
     },
     onSocketClose: function (): void {},
     onSocketMessage: function (evt): void {
       var msg = JSON.parse(evt.data)
-      console.log(msg)
+      console.log(msg.action)
 
       switch (msg.action) {
+        // called once on mounted
         case 'get-rooms': {
           // TODO:
+          this.rooms = []
+          msg.data.forEach((element) => {
+            this.rooms.push(element)
+          })
+          console.dir(msg)
           break
         }
         case 'get-hub-players': {
@@ -71,12 +104,19 @@ export default defineNuxtComponent({
           })
           break
         }
+        // called everytime some one joins/leaves
         case 'join-hub': {
+          this.chat.push(`${msg.sender} has joined the hub.`)
           this.hubPlayers.push(msg.sender)
           break
         }
         case 'left-hub': {
-          this.hubPlayers.filter(s => s == msg.sender || s === msg.sender) //FIXME: not removing?
+          this.chat.push(`${msg.sender} has left the hub.`)
+          this.hubPlayers.pop(msg.sender)
+          break
+        }
+        case 'hub-msg': {
+          this.chat.push(`${msg.sender} : ${msg.message}`)
           break
         }
       }

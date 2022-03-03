@@ -1,6 +1,9 @@
 <template>
   <div v-if="roomID != 0 && ws != null">
     <h1>room {{ roomID }}</h1>
+
+    <!-- TODO: chat component (for room and hub) -->
+    <h2>room chat</h2>
     <table></table>
     <fieldset>
       <legend>Enter your message..</legend>
@@ -11,7 +14,7 @@
       </div>
     </fieldset>
         <button v-on:click="onLeaveRoom">Back to lobby</button>
-    <h2>chat:</h2>
+    <h2>room messages:</h2>
     <ul>
       <li :key="msg" v-for="msg in chat">
         {{ msg }}
