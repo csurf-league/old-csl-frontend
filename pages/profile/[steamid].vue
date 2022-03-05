@@ -7,7 +7,7 @@ export default defineNuxtComponent({
   setup() {
     const router = useRouter()
     const route = useRoute()
-    const steamid = route.params.steamid // in case no steamid is sent, nuxt will redirect to 404
+    const steamid = route.params.steamid
 
     return { steamid }
   },
