@@ -13,5 +13,10 @@ export const useUserStore = defineStore('user', {
       userInfo: {} as User,
     } as UserState),
   getters: {},
-  actions: {},
+  actions: {
+    setUserSettings(user: User) {
+      this.userInfo = user
+      this.isLoggedIn = true
+    },
+  },
 })

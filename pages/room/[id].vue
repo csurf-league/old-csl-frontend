@@ -76,7 +76,7 @@ export default defineNuxtComponent({
     const onSocketConnect = () => {}
     const onSocketClose = () => {}
     const onSocketError = (evt: Event) => {
-      router.push('/404') // TODO: 404 page/component showing the error ig
+      router.push('/404') // TODO: error page/component showing the error ig
     }
     const onSocketMessage = (evt: MessageEvent<any>) => {
       var msg = JSON.parse(evt.data)

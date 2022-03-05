@@ -36,4 +36,25 @@ export default defineNuxtConfig({
     classSuffix: '-mode',
     storageKey: 'nuxt-color-mode',
   },
+
+  // proxy: {
+  //   '/': { target: 'http://localhost:8080/', changeOrigin: true },
+  // },
+
+  //* Global page headers: https://go.nuxtjs.dev/config-head
+  head: {
+    title: 'csl-frontend',
+    htmlAttrs: {
+      lang: 'en',
+    },
+    meta: [
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: '' },
+    ],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+  },
+
+  //* Disable server-side rendering
+  ssr: true,
 })
