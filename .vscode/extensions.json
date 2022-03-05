@@ -1,3 +1,9 @@
 {
-  "recommendations": ["johnsoncodehk.volar", "johnsoncodehk.vscode-typescript-vue-plugin", "parthr2031.colorful-comments"]
+  "recommendations": [
+    "johnsoncodehk.volar",
+    "johnsoncodehk.vscode-typescript-vue-plugin",
+    "parthr2031.colorful-comments",
+    "usernamehw.errorlens",
+    "wayou.vscode-todo-highlight"
+  ]
 }
