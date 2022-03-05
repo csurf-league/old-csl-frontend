@@ -5,7 +5,8 @@
     <div v-if="rooms != []">
       <div v-for="r in rooms" :key="r.id">
         <button v-on:click="joinRoom(r.id)">
-          join room {{ r.id }}; current players: {{ r.clients == null ? 0 : r.clients.length }}; maxplayers: {{ r.maxplayers }}
+          join room {{ r.id }}; current players: {{ r.clients == null ? 0 : r.clients.length }}; maxplayers:
+          {{ r.maxplayers }}
         </button>
         <br />
       </div>
@@ -17,7 +18,7 @@
       </li>
     </ul>
 
-<!-- TODO: chat component (for room and hub) -->
+    <!-- TODO: chat component (for room and hub) -->
     <h2>hub chat</h2>
     <table></table>
     <fieldset>
@@ -38,51 +39,64 @@
 
 <script lang="ts">
 export default defineNuxtComponent({
-  data() {
-    return {
-      ws: null as WebSocket,
-      hubPlayers: [] as string[], // TODO: user interface
-      rooms: [],
-      steamid: (Math.floor(Math.random() * 10000) + 7000).toString(), // TODO: local storage steamid / auth token
-      chatMessage: '' as string,
-      chat: [] as string[]
-    }
-  },
+  setup() {
+    //* Data
+    const router = useRouter()
+    const ws = ref<WebSocket>(null)
+    const hubPlayers = ref<string[]>([])
+    const rooms = ref([])
+    const steamid = ref((Math.floor(Math.random() * 10000) + 7000).toString())
+    const chatMessage = ref<string>('')
+    const chat = ref<string[]>([])
 
-  methods: {
-    joinRoom: function (v: number) {
-      this.$router.push('/room/' + v)
-    },
-    getRooms: function () {
-      this.ws.send(
-        JSON.stringify({
-          action: 'get-rooms',
-        })
-      )
-    },
-    getCurrentPlayers: function () {
-      this.ws.send(
-        JSON.stringify({
-          action: 'get-hub-players',
-        })
-      )
-    },
-    onSendMsg: function (): void {
-      this.ws.send(
+    //* Lifecycle hooks
+    onUnmounted(() => {
+      if (ws.value != null && ws.value.readyState != WebSocket.CLOSED) {
+        ws.value.close(1000, 'Client has left the hub')
+      }
+    })
+    onMounted(() => {
+      // connect to hub websocket
+      ws.value = new WebSocket(`ws://localhost:8081/api/rooms?steamid=${steamid.value}`)
+      ws.value.onopen = function (evt: Event) {
+        onSocketConnect()
+      }
+      ws.value.onclose = function (evt: CloseEvent) {
+        onSocketClose()
+      }
+      ws.value.onmessage = function (evt: MessageEvent<any>) {
+        onSocketMessage(evt)
+      }
+      ws.value.onerror = function (evt: Event) {
+        onSocketError(evt)
+      }
+    })
+
+    //* Methods
+    const joinRoom = (id: number) => {
+      router.push(`/room/${id}`)
+    }
+    const getRooms = () => {
+      ws.value.send(JSON.stringify({ action: 'get-rooms' }))
+    }
+    const getCurrentPlayers = () => {
+      ws.value.send(JSON.stringify({ action: 'get-hub-players' }))
+    }
+    const onSendMsg = () => {
+      ws.value.send(
         JSON.stringify({
           action: 'hub-msg',
-          message: this.chatMessage,
-          sender: this.steamid,
+          message: chatMessage.value,
+          sender: steamid.value,
         })
       )
-    },
-    //* Socket stuff
-    onSocketConnect: function (): void {
-      //this.getRooms() // backend will automatically send us current rooms when client enters the hub
-      //this.getCurrentPlayers()
-    },
-    onSocketClose: function (): void {},
-    onSocketMessage: function (evt): void {
+    }
+    const onSocketConnect = () => {}
+    const onSocketClose = () => {}
+    const onSocketError = (evt: Event) => {
+      router.push('/404') // TODO: 404 page/component showing the error ig
+    }
+    const onSocketMessage = (evt: MessageEvent<any>) => {
       var msg = JSON.parse(evt.data)
       console.log(msg.action)
 
@@ -90,71 +104,42 @@ export default defineNuxtComponent({
         // called once on mounted
         case 'get-rooms': {
           // TODO:
-          this.rooms = []
+          rooms.value = []
           msg.data.forEach((element) => {
-            this.rooms.push(element)
+            rooms.value.push(element)
           })
           console.dir(msg)
           break
         }
         case 'get-hub-players': {
-          this.hubPlayers = []
+          hubPlayers.value = []
           msg.data.forEach((element) => {
-            this.hubPlayers.push(element.steamid)
+            hubPlayers.value.push(element.steamid)
           })
           break
         }
         // called everytime some one joins/leaves
         case 'join-hub': {
-          this.chat.push(`${msg.sender} has joined the hub.`)
-          this.hubPlayers.push(msg.sender)
+          chat.value.push(`${msg.sender} has joined the hub.`)
+          hubPlayers.value.push(msg.sender)
           break
         }
         case 'left-hub': {
-          this.chat.push(`${msg.sender} has left the hub.`)
-          this.hubPlayers.pop(msg.sender)
+          chat.value.push(`${msg.sender} has left the hub.`)
+          hubPlayers.value = hubPlayers.value.filter(function (value, index, arr) {
+            return value != msg.sender
+          })
           break
         }
         case 'hub-msg': {
-          this.chat.push(`${msg.sender} : ${msg.message}`)
+          chat.value.push(`${msg.sender} : ${msg.message}`)
           break
         }
       }
-    },
-    onSocketError: function (evt): void {
-      this.$router.push('/404') // TODO: 404 page/component showing the error ig
-    },
-  },
-  unmounted() {
-    if (this.ws != null && this.ws.readyState != WebSocket.CLOSED) {
-      this.ws.close(1000, 'Client has left the hub')
-    }
-  },
-  mounted() {
-    // connect to hub websocket
-    this.ws = new WebSocket(`ws://localhost:8081/api/rooms?steamid=${this.steamid}`)
-    const _m = this // used to call vue methods
-    this.ws.onopen = function () {
-      _m.onSocketConnect()
-    }
-    this.ws.onclose = function () {
-      _m.onSocketClose()
-    }
-    this.ws.onmessage = function (evt) {
-      _m.onSocketMessage(evt)
-    }
-    this.ws.onerror = function (evt) {
-      _m.onSocketError(evt)
     }
 
-    /* didnt work :C
-    this.socket = this.$nuxtSocket({
-      // nuxt-socket-io opts:
-      name: 'csl', // Use socket "home"
-      // socket.io-client opts:
-      reconnection: false,
-    })
-    */
+    // Return only what's needed outside of <script>
+    return { ws, hubPlayers, rooms, steamid, chatMessage, chat, joinRoom, onSendMsg }
   },
 })
 </script>

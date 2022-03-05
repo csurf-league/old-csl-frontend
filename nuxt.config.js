@@ -20,25 +20,11 @@ export default defineNuxtConfig({
 
   //* env
   publicRuntimeConfig: {
-    API_URL: process.env.API_URL || '',
+    API_URL: process.env.API_URL || 'http://localhost:8081',
   },
 
   //* modules
-  modules: ['@nuxtjs/color-mode', 'nuxt-socket-io'],
-  io: {
-    // module options
-    sockets: [
-      {
-        name: 'csl',
-        url: 'http://localhost:8081/api/rooms',
-      },
-    ],
-    server: {
-        cors: { 
-          origin: "http://localhost:3000",
-         },
-      }
-  },
+  modules: ['@nuxtjs/color-mode'],
 
   colorMode: {
     preference: 'light', // default value of $colorMode.preference

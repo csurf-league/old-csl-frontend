@@ -6,7 +6,7 @@ export default defineNuxtComponent({
     const config = useRuntimeConfig()
 
     onMounted(() => {
-      window.location.replace(config.API_URL + '/auth/steam')
+      window.location.replace(config.API_URL + '/login')
     })
   },
 })
