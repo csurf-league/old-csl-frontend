@@ -5,7 +5,10 @@ export default defineNuxtPlugin(() => {
   return {
     provide: {
       axios: () => {
-        return axios.create({/* configuration here */})
+        return axios.create({
+          withCredentials: true,
+          baseURL: useRuntimeConfig().API_URL
+        })
       }
     }
   }

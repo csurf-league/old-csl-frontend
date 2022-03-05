@@ -4,18 +4,16 @@
 </template>
 
 <script lang="ts">
-    import { useNuxtApp } from '#app'
-
 export default defineNuxtComponent({
   async setup() {
-    const config = useRuntimeConfig()
+    const axios = useAxios()
 
     let data 
 
-    let { $axios } = useNuxtApp()
-    const axios = $axios()
-    axios.get(config.API_URL + '/profile').then((response) => {
+    
+    axios.get('/profile').then((response) => {
       /* do things with response and response.data */
+      console.dir(response.data)
       data = response.data
     }).catch((err) => {
         console.dir(err)
