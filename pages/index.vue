@@ -5,7 +5,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script lang="ts">
+export default defineNuxtComponent({
+  name: ' OI'
+})
 </script>
 
 <style lang="scss">
