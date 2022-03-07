@@ -1,7 +1,8 @@
 <template>
   <div>
-    <span>home</span>
-    <NuxtLink to="/profile/1">profile</NuxtLink>
+    <h1>home</h1>
+    <NuxtLink to="/profile">my profile</NuxtLink> <br>
+    <NuxtLink to="/profile/1">profile player 1</NuxtLink> <br>
   </div>
 </template>
 

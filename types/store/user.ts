@@ -1,9 +1,9 @@
 export interface UserState {
   isLoggedIn: boolean
-  userInfo: User
+  userInfo: ISteamUser
 }
 
-export interface User {
+export interface ISteamUser {
   id: number
   steamid: string
   personaname: string
@@ -20,13 +20,32 @@ export interface User {
   updated_at: Date
 }
 
+export interface IPlayerStats {
+  id: number
+  player_steamid: string
+  map_id: number
+  kills: number
+  deaths: number
+  assists: number
+  shots: number
+  hits: number
+  damage: number
+  first_blood: number
+  aces: number
+  headshots: number
+  no_ccope: number
+  count: number
+  playtime: number
+  match_win: number
+  match_lose: number
+  match_draw: number
+  rounds_won: number
+  rounds_lost: number
+  mvp: number
+}
+
 export enum Role {
   USER = 'user',
   PREMIUM = 'premium',
   ADMIN = 'admin',
-}
-
-export interface UserAuth {
-  User: User
-  Token: string
 }
