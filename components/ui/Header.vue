@@ -12,6 +12,7 @@
             </li>
             <li v-else>
               <span class="second__is-logged">IsLogged as {{ useUserStore().userInfo?.personaname || '' }}</span>
+              <button class="second__logout" @click="useUserStore().removeUserSettings()">Logout</button>
             </li>
           </ul>
         </div>
@@ -21,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUserStore } from '~~/store/user'
+import { useUserStore } from '../../store/user'
 const config = useRuntimeConfig()
 </script>
 
@@ -99,6 +100,12 @@ const config = useRuntimeConfig()
         border-radius: 5px;
 
         color: var(--color-header);
+      }
+
+      &__logout {
+        color: tomato;
+        font-size: 1rem;
+        cursor: pointer;
       }
     }
   }

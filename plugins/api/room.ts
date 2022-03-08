@@ -1,12 +1,12 @@
-import { Room } from '@/types/store'
+import { Room } from '@/types/stores'
 import { AxiosInstance } from 'axios'
 
 export const RoomApi = (instance: AxiosInstance) => ({
   async getOne(id: number) {
-    const { data } = await instance.get<Room>('/rooms/'{
-      params:{
-        id
-      }
+    const { data } = await instance.get<Room>('/rooms/', {
+      params: {
+        id,
+      },
     })
     return data
   },

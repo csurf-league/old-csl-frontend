@@ -23,84 +23,77 @@
   </div>
 </template>
 
-<script lang="ts">
-export default defineNuxtComponent({
-  setup() {
-    //* Data
-    const router = useRouter()
-    const route = useRoute()
-    const roomID = ref<number>(0)
-    const ws = ref<WebSocket>(null)
-    const steamid = ref((Math.floor(Math.random() * 10000) + 7000).toString())
-    const chatMessage = ref<string>('')
-    const chat = ref<string[]>([])
+<script setup lang="ts">
+//* Data
+const router = useRouter()
+const route = useRoute()
+const roomID = ref<number>(0)
+const ws = ref<WebSocket>(null)
+const steamid = ref((Math.floor(Math.random() * 10000) + 7000).toString())
+const chatMessage = ref<string>('')
+const chat = ref<string[]>([])
 
-    //* Lifecycle hooks
-    onUnmounted(() => {
-      if (ws.value != null && ws.value.readyState != WebSocket.CLOSED) {
-        ws.value.close(1000, 'Client has left the room')
-      }
-    })
-    onMounted(() => {
-      roomID.value = Number.parseInt(route.params.id as string, 10)
-
-      // connect to room websocket
-      ws.value = new WebSocket(`ws://localhost:8081/api/room/${roomID.value}?steamid=${steamid.value}`)
-      ws.value.onopen = function (evt: Event) {
-        onSocketConnect()
-      }
-      ws.value.onclose = function (evt: CloseEvent) {
-        onSocketClose()
-      }
-      ws.value.onmessage = function (evt: MessageEvent<any>) {
-        onSocketMessage(evt)
-      }
-      ws.value.onerror = function (evt: Event) {
-        onSocketError(evt)
-      }
-    })
-
-    //* Methods
-    const onSendMsg = () => {
-      ws.value.send(
-        JSON.stringify({
-          action: 'room-msg',
-          message: chatMessage.value,
-          sender: steamid.value,
-        })
-      )
-    }
-    const onLeaveRoom = () => {
-      router.push('/rooms') 
-    }
-    const onSocketConnect = () => {}
-    const onSocketClose = () => {}
-    const onSocketError = (evt: Event) => {
-      router.push('/404') // TODO: error page/component showing the error ig
-    }
-    const onSocketMessage = (evt: MessageEvent<any>) => {
-      var msg = JSON.parse(evt.data)
-      console.log(msg)
-      switch (msg.action) {
-        case 'room-msg': {
-          chat.value.push(`${msg.sender} : ${msg.message}`)
-          break
-        }
-        case 'join-room': {
-          chat.value.push(`${msg.sender} has entered the room.`)
-          break
-        }
-        case 'left-room': {
-          chat.value.push(`${msg.sender} has left the room.`)
-          break
-        }
-      }
-    }
-
-    return { roomID, ws, chatMessage, chat, onSendMsg, onLeaveRoom }
-  },
+//* Lifecycle hooks
+onUnmounted(() => {
+  if (ws.value != null && ws.value.readyState != WebSocket.CLOSED) {
+    ws.value.close(1000, 'Client has left the room')
+  }
 })
+onMounted(() => {
+  roomID.value = Number.parseInt(route.params.id as string, 10)
+
+  // connect to room websocket
+  ws.value = new WebSocket(`ws://localhost:8081/api/room/${roomID.value}?steamid=${steamid.value}`)
+  ws.value.onopen = function (evt: Event) {
+    onSocketConnect()
+  }
+  ws.value.onclose = function (evt: CloseEvent) {
+    onSocketClose()
+  }
+  ws.value.onmessage = function (evt: MessageEvent<any>) {
+    onSocketMessage(evt)
+  }
+  ws.value.onerror = function (evt: Event) {
+    onSocketError(evt)
+  }
+})
+
+//* Methods
+const onSendMsg = () => {
+  ws.value.send(
+    JSON.stringify({
+      action: 'room-msg',
+      message: chatMessage.value,
+      sender: steamid.value,
+    })
+  )
+}
+const onLeaveRoom = () => {
+  router.push('/rooms')
+}
+const onSocketConnect = () => {}
+const onSocketClose = () => {}
+const onSocketError = (evt: Event) => {
+  router.push('/404') // TODO: error page/component showing the error ig
+}
+const onSocketMessage = (evt: MessageEvent<any>) => {
+  var msg = JSON.parse(evt.data)
+  console.log(msg)
+  switch (msg.action) {
+    case 'room-msg': {
+      chat.value.push(`${msg.sender} : ${msg.message}`)
+      break
+    }
+    case 'join-room': {
+      chat.value.push(`${msg.sender} has entered the room.`)
+      break
+    }
+    case 'left-room': {
+      chat.value.push(`${msg.sender} has left the room.`)
+      break
+    }
+  }
+}
 </script>
 
-<style>
-</style>
+<style></style>

@@ -1,27 +1,23 @@
 <template>
-  <h1>index </h1>
-  <h1>data: {{ data }} </h1>
+  <h1>index</h1>
+  <h1>data: {{ data }}</h1>
 </template>
 
-<script lang="ts">
-export default defineNuxtComponent({
-  async setup() {
-    const axios = useAxios()
+<script setup lang="ts">
+const axios = useAxios()
 
-    let data 
+let data
 
-    
-    axios.get('/profile').then((response) => {
-      /* do things with response and response.data */
-      console.dir(response.data)
-      data = response.data
-    }).catch((err) => {
-        console.dir(err)
-    })
-
-    return { data }
-  },
-})
+axios
+  .get('/profile')
+  .then((response) => {
+    /* do things with response and response.data */
+    console.dir(response.data)
+    data = response.data
+  })
+  .catch((err) => {
+    console.dir(err)
+  })
 </script>
 
 <style></style>

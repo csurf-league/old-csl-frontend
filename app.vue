@@ -6,25 +6,12 @@
   </div>
 </template>
 
-<script lang="ts">
-export default defineNuxtComponent({
-  setup() {
-    const axios = useAxios()
-    axios
-      .get('/profile')
-      .then((response) => {
-        // save user in pinia
-        console.dir(response.data)
-      })
-      .catch((err) => {
-        // user is not logged in, remove it from pinia?
-        console.log(err)
-      })
-  }
-})
+<script setup lang="ts">
+import { useUserStore } from './store'
 
-definePageMeta({
-  layout: false,
+await useAsyncData('auth', async () => {
+  const data = await useNuxtApp().$api().user.auth()
+  if (data) useUserStore().setUserSettings(data)
 })
 </script>
 

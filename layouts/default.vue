@@ -20,8 +20,7 @@
 <script setup lang="ts">
 const { $t } = useNuxtApp()
 
-const router = useRouter()
-const currentRoute = computed(() => router.currentRoute.value)
+const currentRoute = computed(() => useRouter().currentRoute.value)
 const routeName = computed(() => currentRoute.value.name)
 const canonicalUrl = computed(() => currentRoute.value.path.replace(/\/$/, ''))
 

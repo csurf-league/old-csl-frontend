@@ -7,14 +7,14 @@ export interface ISteamUser {
   id: number
   steamid: string
   personaname: string
-  lastlogoff: 1646052798
+  lastlogoff: number
   profileurl: string
   avatar: string
   avatarmedium: string
   avatarfull: string
   realname: string
   primaryclanid: string
-  timecreated: 1423135332
+  timecreated: number
   loccountrycode: string
   created_at: Date
   updated_at: Date
