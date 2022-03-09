@@ -1,6 +1,5 @@
-import { UserState } from '@/types/store'
 import { defineStore } from 'pinia'
-import { ISteamUser } from '../types/store/user'
+import { ISteamUser, UserState } from '../types/store/user'
 
 //* =======================================================================================
 //* User store
@@ -17,6 +16,11 @@ export const useUserStore = defineStore('user', {
     setUserSettings(user: ISteamUser) {
       this.userInfo = user
       this.isLoggedIn = true
+    },
+    removeUserSettings() {
+      useCookie('session-csl').value = null
+      this.userInfo = {} as ISteamUser
+      this.isLoggedIn = false
     },
   },
 })
