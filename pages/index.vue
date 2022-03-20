@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>home</h1>
+    <NuxtLink to="/profile">your profile</NuxtLink> <br />
     <NuxtLink to="/profile/1">profile player 1</NuxtLink> <br />
     <NuxtLink to="/profile/2">profile player 2</NuxtLink> <br />
     <NuxtLink to="/profile/3">profile player 3</NuxtLink> <br />

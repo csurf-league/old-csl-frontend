@@ -4,20 +4,15 @@
 </template>
 
 <script setup lang="ts">
-const axios = useAxios()
+import { useUserStore } from '../../store/user'
 
-let data
+definePageMeta({
+  middleware: 'auth'
+})
 
-axios
-  .get('/profile')
-  .then((response) => {
-    /* do things with response and response.data */
-    console.dir(response.data)
-    data = response.data
-  })
-  .catch((err) => {
-    console.dir(err)
-  })
+const userStore = useUserStore()
+
+const data = userStore.userInfo
 </script>
 
 <style></style>

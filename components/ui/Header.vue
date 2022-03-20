@@ -11,7 +11,7 @@
               <a class="second__signin" :href="config.API_URL + '/login'"> Sign In </a>
             </li>
             <li v-else>
-              <span class="second__is-logged">IsLogged as {{ useUserStore().userInfo?.personaname || '' }}</span>
+              <span class="second__is-logged">logged as {{ useUserStore().userInfo?.personaname || '' }}</span>
               <button class="second__logout" @click="useUserStore().removeUserSettings()">Logout</button>
             </li>
           </ul>
